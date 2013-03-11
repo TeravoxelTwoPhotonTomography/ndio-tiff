@@ -9,28 +9,28 @@ endmacro()
 # CONFIG
 ################################################################################
 
+find_package(ND    CONFIG PATHS cmake)
 find_package(MYLIB CONFIG PATHS cmake)
-if(MYLIB_FOUND)
-  include_directories(${MYLIB_INCLUDE_DIR})
 
-  get_directory_property(ND_SOURCE_DIR PARENT_DIRECTORY)
+include_directories(${ND_INCLUDE_DIR})
+include_directories(${MYLIB_INCLUDE_DIR})
 
-  include_directories(${ND_SOURCE_DIR}) # from parent scope
+get_directory_property(ND_SOURCE_DIR PARENT_DIRECTORY)
 
-  ################################################################################
-  # SOURCE
-  ################################################################################
+################################################################################
+# SOURCE
+################################################################################
 
-  file(GLOB SRCS src/*.c)
-  file(GLOB HDRS src/*.h)
+file(GLOB SRCS src/*.c)
+file(GLOB HDRS src/*.h)
 
-  ################################################################################
-  # TARGETS
-  ################################################################################
+################################################################################
+# TARGETS
+################################################################################
 
-  add_library(ndio-tiff MODULE ${SRCS} ${HDRS})
-  target_link_libraries(ndio-tiff ${MYLIB_LIBRARIES} nd)
-endif(MYLIB_FOUND)
+add_library(ndio-tiff MODULE ${SRCS} ${HDRS})
+target_link_libraries(ndio-tiff ${MYLIB_LIBRARIES} ${ND_LIBRARIES})
+
 
 ###############################################################################
 #  Documentation
