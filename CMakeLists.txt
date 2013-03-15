@@ -12,7 +12,7 @@ endmacro()
 find_package(ND    CONFIG PATHS cmake)
 find_package(MYLIB CONFIG PATHS cmake)
 
-include_directories(${ND_INCLUDE_DIR})
+include_directories(${ND_INCLUDE_DIRS})
 include_directories(${MYLIB_INCLUDE_DIR})
 
 get_directory_property(ND_SOURCE_DIR PARENT_DIRECTORY)
@@ -53,7 +53,7 @@ endif()
 ###############################################################################
 #  Install
 ###############################################################################
-install(TARGETS ndio-tiff
-#  EXPORT ndio-tiff-targets
-  LIBRARY DESTINATION bin/${NDIO_PLUGIN_PATH}
-)
+foreach(_path ${NDIO_PLUGIN_PATH})
+  install(TARGETS ndio-tiff LIBRARY DESTINATION ${_path})
+endforeach()
+install(TARGETS ndio-tiff LIBRARY DESTINATION bin/plugins)
