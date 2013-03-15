@@ -30,7 +30,7 @@ file(GLOB HDRS src/*.h)
 
 add_library(ndio-tiff MODULE ${SRCS} ${HDRS})
 target_link_libraries(ndio-tiff ${MYLIB_LIBRARIES} ${ND_LIBRARIES})
-
+add_dependencies(ndio-tiff nd)
 
 ###############################################################################
 #  Documentation
