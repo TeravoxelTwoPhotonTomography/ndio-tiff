@@ -30,7 +30,7 @@ file(GLOB HDRS src/*.h)
 
 add_library(ndio-tiff MODULE ${SRCS} ${HDRS})
 target_link_libraries(ndio-tiff ${MYLIB_LIBRARIES} ${ND_LIBRARIES})
-add_dependencies(ndio-tiff nd)
+add_dependencies(ndio-tiff nd libmylib)
 
 ###############################################################################
 #  Documentation
@@ -54,6 +54,9 @@ endif()
 #  Install
 ###############################################################################
 foreach(_path ${NDIO_PLUGIN_PATH})
-  install(TARGETS ndio-tiff LIBRARY DESTINATION ${_path})
+  install(TARGETS ndio-tiff EXPORT ndio-tiff-targets LIBRARY DESTINATION ${_path})
 endforeach()
-install(TARGETS ndio-tiff LIBRARY DESTINATION bin/plugins)
+install(TARGETS ndio-tiff EXPORT ndio-tiff-targets LIBRARY DESTINATION bin/plugins)
+install(EXPORT ndio-tiff-targets DESTINATION cmake)
+export(TARGETS ndio-tiff FILE ndio-tiff-config.cmake)
+export(PACKAGE ndio-tiff)

@@ -7,7 +7,7 @@ set(MYLIB_GIT_REPOSITORY git@bitbucket.org:nclack/mylib.git CACHE STRING "Locati
 if(NOT TARGET libmylib)
   ExternalProject_Add(libmylib
       GIT_REPOSITORY ${MYLIB_GIT_REPOSITORY}      
-      UPDATE_COMMAND git pull origin master
+      #UPDATE_COMMAND git pull origin master
       CMAKE_ARGS     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   )
