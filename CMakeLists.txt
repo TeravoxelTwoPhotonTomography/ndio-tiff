@@ -54,9 +54,9 @@ endif()
 #  Install
 ###############################################################################
 foreach(_path ${NDIO_PLUGIN_PATH})
-  install(TARGETS ndio-tiff EXPORT ndio-tiff-targets LIBRARY DESTINATION ${_path})
+  install(TARGETS ndio-tiff DESTINATION ${_path})
 endforeach()
-install(TARGETS ndio-tiff EXPORT ndio-tiff-targets LIBRARY DESTINATION bin/plugins)
+install(TARGETS ndio-tiff EXPORT ndio-tiff-targets DESTINATION bin/plugins)
 install(EXPORT ndio-tiff-targets DESTINATION cmake)
 export(TARGETS ndio-tiff FILE ndio-tiff-config.cmake)
 export(PACKAGE ndio-tiff)
