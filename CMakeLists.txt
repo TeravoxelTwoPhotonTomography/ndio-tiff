@@ -8,6 +8,8 @@ endmacro()
 ################################################################################
 # CONFIG
 ################################################################################
+set(NDIO_TIFF_TEST_DATA_PATH ${PROJECT_SOURCE_DIR}/test/data)
+configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 
 find_package(ND    CONFIG PATHS cmake)
 find_package(MYLIB CONFIG PATHS cmake)
@@ -33,22 +35,14 @@ target_link_libraries(ndio-tiff ${MYLIB_LIBRARIES} ${ND_LIBRARIES})
 add_dependencies(ndio-tiff nd libmylib)
 
 ###############################################################################
+#  Tests
+###############################################################################
+add_subdirectory(test)
+
+###############################################################################
 #  Documentation
 ###############################################################################
-
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
-  configure_file(${PROJECT_SOURCE_DIR}/doc/Doxyfile.in
-                 ${PROJECT_BINARY_DIR}/doc/Doxyfile
-                 @ONLY
-                 )
-  add_custom_target(ndio-tiff-docs
-    ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxyfile
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    COMMENT           "Generating Docs for Tiff IO Plugin"
-    VERBATIM
-    )
-endif()
+add_subdirectory(doc)
 
 ###############################################################################
 #  Install

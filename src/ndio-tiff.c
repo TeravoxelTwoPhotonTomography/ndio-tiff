@@ -58,7 +58,7 @@ Value_Type types_nd_to_mylib[] =
 //-// INTERFACE
 //-//
 
-static const char* name_tiff(void) { return "tiff/mylib"; }
+static const char* name_tiff(void) { return "tiff"; }
 
 static unsigned is_tiff(const char *path, const char *mode)
 { switch(mode[0])
@@ -261,8 +261,10 @@ static unsigned write_tiff(ndio_t file, nd_t a)
     case 2: c=d=1;                  break;
     case 3: c=1;   d=ndshape(a)[2]; break;
     default:
-      c=ndshape(a)[ndndim(a)-1];                   // channels are the last dimension
-      d=ndstrides(a)[ndndim(a)-1]/ndstrides(a)[2]; // concatenate dimensions 3...ndim-1, inclusive //1,w,wh,whd,whdt,whdtc
+      c=ndshape(a)[ndndim(a)-1];                        // channels are the last dimension
+      if(c>4) c=1;                                      // support RGBA at most, otherwise switch back to grayscale
+      d=ndstrides(a)[ndndim(a)-(c!=1)]/ndstrides(a)[2]; // concatenate non-color non-image dimensions, inclusive //1,w,wh,whd,whdt,whdtc
+      
   }
   w=ndshape(a)[0];
   h=ndshape(a)[1];
