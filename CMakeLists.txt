@@ -8,6 +8,11 @@ endmacro()
 ################################################################################
 # CONFIG
 ################################################################################
+set(RPATH \$ORIGIN)
+if(APPLE)
+  set(RPATH @rpath)
+endif()
+set(CMAKE_INSTALL_RPATH ${RPATH})
 set(NDIO_TIFF_TEST_DATA_PATH ${PROJECT_SOURCE_DIR}/test/data)
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 
