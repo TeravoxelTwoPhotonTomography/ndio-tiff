@@ -7,7 +7,7 @@ if(length(size(a))<3)
   push(a);
 else
   for i=1:size(a,3)
-    push(a(:,:,1));
+    push(a(:,:,i));
   end
 end
 

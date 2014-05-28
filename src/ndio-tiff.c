@@ -68,7 +68,7 @@ static unsigned is_tiff(const char *path, const char *mode)
       return t!=NULL;
     } break;
     case 'w':
-    { const char *e,**ext,*exts[] = {".tif",".tiff",NULL};      
+    { const char *e,**ext,*exts[] = {".tif",".tiff",NULL};
       for(ext=exts;*ext;++ext)
         if( 0==strcmp(*ext,(e=strrchr(path,'.'))?e:"") ) //output of strrchr is sanitized in case of no found '.'
           return 1;
@@ -79,7 +79,7 @@ static unsigned is_tiff(const char *path, const char *mode)
   }
 }
 
-static void* open_tiff(const char* path, const char *mode)
+static void* open_tiff(ndio_fmt_t *fmt, const char* path, const char *mode)
 { return Open_Tiff((char*)path,(char*)mode);
 }
 
@@ -113,12 +113,12 @@ static size_t prod(const size_t *s, size_t n)
 /** Determines the shape of the array needed to read \a file.
  */
 static nd_t shape_tiff(ndio_t file)
-{ 
+{
   int w,h,c,d;
   Tiff *ctx;
   TRY(ctx=(Tiff*)ndioContext(file));
   // assumes first ifd is representative
-  Rewind_Tiff(ctx); // just in case? I don't know if there's a way to remember the ifd we we're on 
+  Rewind_Tiff(ctx); // just in case? I don't know if there's a way to remember the ifd we we're on
   TRY(0==Get_IFD_Shape(ctx,&w,&h,&c));
   for(d=0;!Tiff_EOF(ctx);Advance_Tiff(ctx),++d); // count planes
   Rewind_Tiff(ctx);
@@ -131,7 +131,7 @@ static nd_t shape_tiff(ndio_t file)
   }
 Error:
   { char* msg;
-    if(msg=Image_Error())
+    if((msg=Image_Error()))
     { LOG("%s(%d): Image Error"ENDL "\t%s"ENDL,__FILE__,__LINE__,msg);
       Image_Error_Release();
     }
@@ -157,7 +157,7 @@ static unsigned read_tiff(ndio_t file, nd_t a)
   void  *d;
   Tiff *ctx;
   Array *plane=0;
-  
+
   TRY(ctx=(Tiff*)ndioContext(file)); /// \todo these checks should be done by the higher level interface, and the documentation should reflect that these pointers are gauranteed not null.
   REQUIRE(a,PTR_ARITHMETIC|CAN_MEMCPY);
   TRY((d=nddata(a))!=NULL);
@@ -176,7 +176,7 @@ static unsigned read_tiff(ndio_t file, nd_t a)
   { const size_t chanstride = (nchan>1)?ndstrides(a)[3]:0;
     for(i=0,Rewind_Tiff(ctx);
           !Tiff_EOF(ctx);
-          ++i,Advance_Tiff(ctx)) // strides: (1,w,wh,[whd,whdc])  
+          ++i,Advance_Tiff(ctx)) // strides: (1,w,wh,[whd,whdc])
     { for(ichan=0;ichan<nchan;++ichan)
       { plane->data=(void*)((uint8_t*)nddata(a)+i*ndstrides(a)[2]+ichan*chanstride);
         TRY(0==Get_IFD_Channel(ctx,ichan,plane));
@@ -203,7 +203,7 @@ static unsigned canseek_tiff(ndio_t file, size_t idim)
 
 /**
  * Reads a slab on a seekable dimension.
- * O(N) iteration through ifd's each time. 
+ * O(N) iteration through ifd's each time.
  */
 static unsigned seek_tiff(ndio_t file, nd_t a, size_t *pos)
 { size_t i,iplane;
@@ -215,7 +215,7 @@ static unsigned seek_tiff(ndio_t file, nd_t a, size_t *pos)
   iplane=(ndndim(a)>2)?pos[2]:0; // if a is 2d, then get plane 0 from the tiff.
 
   TRY(ctx=(Tiff*)ndioContext(file));
-  REQUIRE(a,PTR_ARITHMETIC|CAN_MEMCPY); 
+  REQUIRE(a,PTR_ARITHMETIC|CAN_MEMCPY);
   TRY((d=nddata(a))!=NULL); /// \todo caller should check this stuff for this function.
   TRY(ndndim(a)>=2);
 
@@ -264,11 +264,11 @@ static unsigned write_tiff(ndio_t file, nd_t a)
       c=ndshape(a)[ndndim(a)-1];                        // channels are the last dimension
       if(c>4) c=1;                                      // support RGBA at most, otherwise switch back to grayscale
       d=ndstrides(a)[ndndim(a)-(c!=1)]/ndstrides(a)[2]; // concatenate non-color non-image dimensions, inclusive //1,w,wh,whd,whdt,whdtc
-      
+
   }
   w=ndshape(a)[0];
   h=ndshape(a)[1];
-  
+
   { Dimn_Type dims[2] = {(Dimn_Type)w,(Dimn_Type)h};
     TRY(plane=Make_Array_Of_Data(
         PLAIN_KIND,
@@ -287,7 +287,7 @@ static unsigned write_tiff(ndio_t file, nd_t a)
       Update_Tiff(ctx,DONT_PRESS);
     }
   }
-  
+
 Finalize:
   if(plane) {plane->data=NULL; Free_Array(plane);}
   return is_ok;
@@ -319,6 +319,6 @@ shared const ndio_fmt_t* ndio_get_format_api(void)
   api.read   = read_tiff;
   api.write  = write_tiff;
   api.canseek= canseek_tiff;
-  api.seek   = seek_tiff;  
+  api.seek   = seek_tiff;
   return &api;
 }

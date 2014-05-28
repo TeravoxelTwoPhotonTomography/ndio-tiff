@@ -19,7 +19,7 @@ struct _files_t
   size_t       ndim;
   size_t       shape[5];
 }
- 
+
 file_table[] =
 { // Set a: Should be i16, but is read by mylib as u16
   {NDIO_TIFF_TEST_DATA_PATH"/test1.tif" ,nd_i16,2,{333,222,1 ,1,1}},
@@ -38,16 +38,16 @@ TEST_F(tiff,OpenClose)
 { struct _files_t *cur;
   // Examples that should fail to open
 #if 1
-  EXPECT_EQ(NULL,ndioOpen("does_not_exist.im.super.serious","tiff","r"));
-  EXPECT_EQ(NULL,ndioOpen("","tiff","r"));
-  EXPECT_EQ(NULL,ndioOpen("","tiff","w"));
-  EXPECT_EQ(NULL,ndioOpen(NULL,"tiff","r"));
-  EXPECT_EQ(NULL,ndioOpen(NULL,"tiff","w"));
+  EXPECT_EQ(NULL,ndioOpen("does_not_exist.im.super.serious",ndioFormat("tiff"),"r"));
+  EXPECT_EQ(NULL,ndioOpen("",ndioFormat("tiff"),"r"));
+  EXPECT_EQ(NULL,ndioOpen("",ndioFormat("tiff"),"w"));
+  EXPECT_EQ(NULL,ndioOpen(NULL,ndioFormat("tiff"),"r"));
+  EXPECT_EQ(NULL,ndioOpen(NULL,ndioFormat("tiff"),"w"));
 #endif
   // Examples that should open
   for(cur=file_table;cur->path!=NULL;++cur)
   { ndio_t file=0;
-    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,"tiff","r"));
+    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,ndioFormat("tiff"),"r"));
     EXPECT_STREQ("tiff",ndioFormatName(file));
     ndioClose(file);
   }
@@ -58,7 +58,7 @@ TEST_F(tiff,Shape)
   for(cur=file_table;cur->path!=NULL;++cur)
   { ndio_t file=0;
     nd_t form;
-    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,"tiff","r"))<<cur->path;
+    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,ndioFormat("tiff"),"r"))<<cur->path;
     ASSERT_NE((void*)NULL,form=ndioShape(file))<<ndioError(file)<<"\n\t"<<cur->path;
     EXPECT_EQ(cur->type,ndtype(form))<<cur->path;
     EXPECT_EQ(cur->ndim,ndndim(form))<<cur->path;
@@ -75,7 +75,7 @@ TEST_F(tiff,Read)
   for(cur=file_table;cur->path!=NULL;++cur)
   { ndio_t file=0;
     nd_t vol;
-    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,"tiff","r"));
+    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,ndioFormat("tiff"),"r"));
     ASSERT_NE((void*)NULL, vol=ndioShape(file))<<ndioError(file)<<"\n\t"<<cur->path;
     EXPECT_EQ(vol,ndref(vol,malloc(ndnbytes(vol)),nd_heap));
     EXPECT_EQ(file,ndioRead(file,vol));
@@ -91,7 +91,7 @@ TEST_F(tiff,ReadSubarray)
     nd_t vol;
     size_t n;
     size_t pos[32]={0}; // assume the file has less than 32 dimensions
-    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,"tiff","r"));
+    EXPECT_NE((void*)NULL,file=ndioOpen(cur->path,ndioFormat("tiff"),"r"));
     EXPECT_NE((void*)NULL, vol=ndioShape(file))<<ndioError(file)<<"\n\t"<<cur->path;
     ASSERT_GT(countof(pos),ndndim(vol));
     // setup to read center hypercube
@@ -118,7 +118,7 @@ typedef ::testing::Types<
 
 template<class T>
 class tiff_Typed:public ::testing::Test
-{ 
+{
 public:
   nd_t a;
   tiff_Typed() :a(0) {}
