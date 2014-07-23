@@ -15,7 +15,7 @@
 #define ENDL              "\n"
 #define LOG(...)          fprintf(stderr,__VA_ARGS__)
 #define TRY(e)            do{if(!(e)) { LOG("%s(%d): %s()"ENDL "\tExpression evaluated as false."ENDL "\t%s"ENDL,__FILE__,__LINE__,__FUNCTION__,#e); goto Error;}} while(0)
-#define TRYMSG(e,msg)     do{if(!(e)) {LOG("%s(%d): %s"ENDL "\tExpression evaluated as false."ENDL "\t%s"ENDL "\t%sENDL",__FILE__,__LINE__,__FUNCTION__,#e,msg); goto Error; }}while(0)
+#define TRYMSG(e,msg)     do{if(!(e)) {LOG("%s(%d): %s"ENDL "\tExpression evaluated as false."ENDL "\t%s"ENDL "\t%s"ENDL,__FILE__,__LINE__,__FUNCTION__,#e,msg); goto Error; }}while(0)
 #define NEW(type,e,nelem) TRY((e)=(type*)malloc(sizeof(type)*(nelem)))
 #define SAFEFREE(e)       if(e){free(e); (e)=NULL;}
 #define FAIL              do{ LOG("Execution should not have reached this point."ENDL); goto Error; }while(0)
@@ -24,7 +24,7 @@
 // Type Translation Tables
 /** Type translation: mylib --> nd_t */
 static const
-nd_type_id_t types_mylib_to_nd[] =
+nd_type_id_t types_mylib_to_nd[] =   
   {
     nd_u8,
     nd_u16,
@@ -282,7 +282,7 @@ static unsigned write_tiff(ndio_t file, nd_t a)
     { for(j=0;j<c;++j)
       { Channel_Kind k= (Channel_Kind)((c<3)?PLAIN_CHAN:(RED_CHAN+j));
         plane->data=(void*)((uint8_t*)nddata(a)+i*ndstrides(a)[2]+j*chanstride);
-        TRY(0==Add_IFD_Channel(ctx,plane,k));
+        TRYMSG(0==Add_IFD_Channel(ctx,plane,k),Image_Error());
       }
       Update_Tiff(ctx,DONT_PRESS);
     }
