@@ -42,11 +42,11 @@ if(NOT ND_LIBRARIES)
 
   find_package(CUDA 4.0)
 
-  if(WIN32)   # Windows shell lightweight utility functions - for plugin search
-    find_library(SHLWAPI Shlwapi.lib) 
-  else()
+  #if(WIN32)   # Windows shell lightweight utility functions - for plugin search
+    #find_library(SHLWAPI Shlwapi.lib) 
+  #else()
     set(SHLWAPI)
-  endif()
+  #endif()
   
   get_property(ND_LIBRARY TARGET nd PROPERTY LOCATION)
   set(ND_INCLUDE_DIRS  ${ND_INCLUDE_DIR} ${CUDA_INCLUDE_DIRS})
